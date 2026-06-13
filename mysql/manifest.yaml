@@ -3,7 +3,7 @@ kind: Secret
 metadata:
   name: mysql
   namespace: roboshop
-  lables:
+  labels:
     component: mysql
     project: roboshop
     tier: database
