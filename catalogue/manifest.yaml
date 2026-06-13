@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalogue
+  namespace: roboshop
+  labels:
+    component: catalogue
+    project: roboshop
+    tier: app
+data:
+  MONGO: true
+  MONGO_URL: mongodb://mongodb:27017/catalogue
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogue
+  namespace: roboshop
+  labels:   #deployment labels
+    component: catalogue
+    project: roboshop
+    tier: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:   #These labels are used by repliaset to create the replicas. These labels must  match with the pod labels.
+      component: catalogue
+      project: roboshop
+      tier: app
+  template:  #The template we are giving is the pod definition
+    metadata:
+      labels:   #These are the pod labels
+        component: catalogue
+        project: roboshop
+        tier: app
+    spec:
+      containers:
+      - name: catalogue
+        image: anilattada/catalogue:v1
+        envFrom:
+        - configMapRef:
+            name: catalogue
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogue
+  namespace: roboshop
+  labels:
+    component: catalogue
+    project: roboshop
+    tier: app
+spec:
+  selector:
+    component: catalogue
+    project: roboshop
+    tier: app
+  ports:
+  - protocol: TCP
+    port: 8080    #service port
+    targetPort: 8080  #container port
